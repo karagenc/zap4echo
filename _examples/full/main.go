@@ -27,7 +27,7 @@ func main() {
 	log, _ := zap.NewDevelopment()
 
 	loggerConfig := zap4echo.LoggerConfig{
-		SkipRequest: func(c echo.Context) bool {
+		Skipper: func(c echo.Context) bool {
 			if c.Request().URL.Path == "/nolog" {
 				return true
 			}

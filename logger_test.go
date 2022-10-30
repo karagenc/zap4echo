@@ -113,9 +113,9 @@ func TestDefaultLoggerWithErrorOnly(t *testing.T) {
 	assert.Equal(t, 2, logs.Len())
 }
 
-func TestDefaultLoggerWithSkipRequest(t *testing.T) {
+func TestDefaultLoggerWithSkipper(t *testing.T) {
 	config := LoggerConfig{
-		SkipRequest: func(c echo.Context) bool {
+		Skipper: func(c echo.Context) bool {
 			if c.Param("skip") == "true" {
 				return true
 			}

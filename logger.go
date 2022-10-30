@@ -20,7 +20,7 @@ type LoggerConfig struct {
 	ErrorOnly bool
 
 	// Skip the current request depending on the context.
-	SkipRequest func(c echo.Context) bool
+	Skipper func(c echo.Context) bool
 
 	// Custom string for the `msg` field
 	CustomMsg string
@@ -62,7 +62,7 @@ func LoggerWithConfig(log *zap.Logger, config LoggerConfig) echo.MiddlewareFunc 
 				c.Error(herr)
 			}
 
-			if config.SkipRequest != nil && config.SkipRequest(c) {
+			if config.Skipper != nil && config.Skipper(c) {
 				return nil
 			}
 
