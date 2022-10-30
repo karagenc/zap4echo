@@ -9,7 +9,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-const DefaultRecoverMsg = "Recovery from panic"
+const DefaultRecoverMsg = "Recovered"
 
 var defaultRecoverConfig = RecoverConfig{
 	StackTrace:     false,

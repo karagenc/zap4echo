@@ -9,7 +9,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-const DefaultLoggerMsg = "Request"
+const DefaultLoggerMsg = "Served"
 const DefaultRequestIDHeader = echo.HeaderXRequestID
 
 var defaultLoggerConfig = LoggerConfig{}
