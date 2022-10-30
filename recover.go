@@ -23,6 +23,9 @@ type RecoverConfig struct {
 	// If stack trace is enabled, this is to print stack traces of all goroutines.
 	PrintStackTraceOfAllGoroutines bool
 
+	// Custom header name for request ID
+	CustomRequestID string
+
 	// The panic was happened, and it was handled and logged gracefully.
 	// What's next?
 	//
@@ -69,9 +72,16 @@ func RecoverWithConfig(log *zap.Logger, config RecoverConfig) echo.MiddlewareFun
 						fields = append(fields, zap.ByteString("stacktrace", stack[:stackLen]))
 					}
 
-					requestID := req.Header.Get(echo.HeaderXRequestID)
+					requestIDHeader := func() string {
+						if config.CustomRequestID != "" {
+							return config.CustomRequestID
+						} else {
+							return DefaultRequestIDHeader
+						}
+					}()
+					requestID := req.Header.Get(requestIDHeader)
 					if requestID == "" {
-						requestID = resp.Header().Get(echo.HeaderXRequestID)
+						requestID = resp.Header().Get(requestIDHeader)
 					}
 					if requestID != "" {
 						fields = append(fields, zap.String("request_id", requestID))

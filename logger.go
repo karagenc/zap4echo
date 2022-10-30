@@ -10,6 +10,7 @@ import (
 )
 
 const DefaultMsg = "Request handled"
+const DefaultRequestIDHeader = echo.HeaderXRequestID
 
 var defaultLoggerConfig = LoggerConfig{}
 
@@ -36,6 +37,9 @@ type LoggerConfig struct {
 	OmitPath       bool
 	OmitRequestID  bool
 	OmitReferer    bool
+
+	// Custom header name for request ID
+	CustomRequestID string
 
 	// A function for adding custom fields depending on the context.
 	AdditionalFields AdditionalFields
@@ -104,9 +108,16 @@ func LoggerWithConfig(log *zap.Logger, config LoggerConfig) echo.MiddlewareFunc 
 			}
 
 			if !config.OmitRequestID {
-				requestID := req.Header.Get(echo.HeaderXRequestID)
+				requestIDHeader := func() string {
+					if config.CustomRequestID != "" {
+						return config.CustomRequestID
+					} else {
+						return DefaultRequestIDHeader
+					}
+				}()
+				requestID := req.Header.Get(requestIDHeader)
 				if requestID == "" {
-					requestID = resp.Header().Get(echo.HeaderXRequestID)
+					requestID = resp.Header().Get(requestIDHeader)
 				}
 				if requestID != "" {
 					fields = append(fields, zap.String("request_id", requestID))
