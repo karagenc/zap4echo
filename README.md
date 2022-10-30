@@ -13,7 +13,7 @@ This is a full featured middleware that provides logging and panic recovery for 
 This is a quick cheat sheet. For examples, see: [basic](_examples/basic/main.go) and [full](_examples/full/main.go)
 
 ```shell
-go get -v github.com/tomruk/zap4echo
+go get -u github.com/tomruk/zap4echo
 ```
 
 ```go
