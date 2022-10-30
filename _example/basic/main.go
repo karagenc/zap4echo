@@ -21,7 +21,7 @@ const addr = "127.0.0.1:8000"
 
 func main() {
 	e := echo.New()
-	log, _ := zap.NewProduction()
+	log, _ := zap.NewDevelopment()
 
 	e.Use(
 		zap4echo.Logger(log),
