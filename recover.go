@@ -11,7 +11,10 @@ import (
 
 const DefaultRecoverMsg = "Recovered"
 
-var defaultRecoverConfig = RecoverConfig{}
+var defaultRecoverConfig = RecoverConfig{
+	StackTrace:     false,
+	StackTraceSize: 4 << 10, // 4 KB
+}
 
 type RecoverConfig struct {
 	// Custom string for the `msg` field
