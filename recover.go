@@ -9,12 +9,17 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+const DefaultRecoverMsg = "Recovery from panic"
+
 var defaultRecoverConfig = RecoverConfig{
 	StackTrace:     false,
 	StackTraceSize: 4 << 10, // 4 KB
 }
 
 type RecoverConfig struct {
+	// Custom string for the `msg` field
+	CustomMsg string
+
 	// Set this to true to enable stack trace.
 	// `stacktrace` field will be used to print stack trace.
 	StackTrace bool
@@ -87,7 +92,14 @@ func RecoverWithConfig(log *zap.Logger, config RecoverConfig) echo.MiddlewareFun
 						fields = append(fields, zap.String("request_id", requestID))
 					}
 
-					log.Error("Recovery from panic", fields...)
+					msg := func() string {
+						if config.CustomMsg == "" {
+							return DefaultRecoverMsg
+						} else {
+							return config.CustomMsg
+						}
+					}()
+					log.Error(msg, fields...)
 
 					e := func() error {
 						if e, ok := err.(error); ok {

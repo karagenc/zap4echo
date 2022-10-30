@@ -43,7 +43,7 @@ func TestDefaultLogger(t *testing.T) {
 
 	l := logs.All()[0]
 	assert.Equal(t, zapcore.InfoLevel, l.Level)
-	assert.Equal(t, DefaultMsg, l.Message)
+	assert.Equal(t, DefaultLoggerMsg, l.Message)
 	assert.Equal(t, "HTTP/1.1", l.ContextMap()["proto"].(string))
 	assert.Equal(t, "192.168.10.60:5252", l.ContextMap()["host"].(string))
 	assert.Equal(t, "GET", l.ContextMap()["method"].(string))
@@ -174,6 +174,32 @@ func TestDefaultLoggerWithCustomMsg(t *testing.T) {
 	assert.Equal(t, customMsg, logs.All()[0].Message)
 }
 
+func TestLoggerWithCustomMsg(t *testing.T) {
+	const customMsg = "31337"
+	config := LoggerConfig{
+		CustomMsg: customMsg,
+	}
+
+	log, logs := createTestZapLogger()
+	m := LoggerWithConfig(log, config)
+	e := createTestEcho(m)
+
+	e.GET("/hello", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Hello!")
+	})
+
+	r := httptest.NewRequest("GET", "/hello", nil)
+
+	w := httptest.NewRecorder()
+	e.ServeHTTP(w, r)
+
+	res := w.Result()
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+
+	l := logs.All()[0]
+	assert.Equal(t, customMsg, l.Message)
+}
+
 func TestDefaultLoggerWithIncludeCaller(t *testing.T) {
 	config := LoggerConfig{
 		IncludeCaller: true,
@@ -235,7 +261,7 @@ func TestLoggerWithEverythingOmitted(t *testing.T) {
 
 	l := logs.All()[0]
 	assert.Equal(t, zapcore.InfoLevel, l.Level)
-	assert.Equal(t, DefaultMsg, l.Message)
+	assert.Equal(t, DefaultLoggerMsg, l.Message)
 	assert.Equal(t, "HTTP/1.1", l.ContextMap()["proto"].(string))
 	assert.Equal(t, "192.168.10.60:5252", l.ContextMap()["host"].(string))
 	assert.Equal(t, "GET", l.ContextMap()["method"].(string))

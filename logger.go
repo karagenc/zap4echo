@@ -9,7 +9,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-const DefaultMsg = "Request handled"
+const DefaultLoggerMsg = "Request"
 const DefaultRequestIDHeader = echo.HeaderXRequestID
 
 var defaultLoggerConfig = LoggerConfig{}
@@ -22,7 +22,7 @@ type LoggerConfig struct {
 	// Skip the current request depending on the context.
 	SkipRequest SkipRequest
 
-	// Custom `msg` field
+	// Custom string for the `msg` field
 	CustomMsg string
 
 	// Don't omit the `caller` field. By default, caller will not be printed.
@@ -139,10 +139,13 @@ func LoggerWithConfig(log *zap.Logger, config LoggerConfig) echo.MiddlewareFunc 
 			}
 
 			s := resp.Status
-			msg := DefaultMsg
-			if config.CustomMsg != "" {
-				msg = config.CustomMsg
-			}
+			msg := func() string {
+				if config.CustomMsg == "" {
+					return DefaultLoggerMsg
+				} else {
+					return config.CustomMsg
+				}
+			}()
 			switch {
 			case s >= 500:
 				log.Error(msg, fields...)
