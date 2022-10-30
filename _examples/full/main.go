@@ -38,7 +38,7 @@ func main() {
 		IncludeCaller:         true,
 		CustomRequestIDHeader: "My-Request-Id",
 
-		AdditionalFields: func(c echo.Context) []zapcore.Field {
+		FieldAdder: func(c echo.Context) []zapcore.Field {
 			name := c.Param("name")
 			if name != "" {
 				return []zapcore.Field{
@@ -55,7 +55,7 @@ func main() {
 		StackTraceSize:        4 << 10, // 4 kb
 		CustomRequestIDHeader: "My-Request-Id",
 
-		HandleError: func(c echo.Context, err error) {
+		ErrorHandler: func(c echo.Context, err error) {
 			fmt.Printf("Panic :( Error: %v\n", err)
 		},
 	}

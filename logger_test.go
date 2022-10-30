@@ -336,10 +336,9 @@ func TestLoggerWithCustomRequestIDHeader2(t *testing.T) {
 	assert.Equal(t, requestID, l.ContextMap()["request_id"].(string))
 }
 
-func TestDefaultLoggerWithAdditionalFields(t *testing.T) {
+func TestDefaultLoggerWithFieldAdder(t *testing.T) {
 	config := LoggerConfig{
-		IncludeCaller: true,
-		AdditionalFields: func(c echo.Context) []zapcore.Field {
+		FieldAdder: func(c echo.Context) []zapcore.Field {
 			return []zapcore.Field{
 				zap.String("hello", "world!"),
 				zap.Bool("b", true),

@@ -20,7 +20,7 @@ type LoggerConfig struct {
 	ErrorOnly bool
 
 	// Skip the current request depending on the context.
-	SkipRequest SkipRequest
+	SkipRequest func(c echo.Context) bool
 
 	// Custom string for the `msg` field
 	CustomMsg string
@@ -42,12 +42,8 @@ type LoggerConfig struct {
 	CustomRequestIDHeader string
 
 	// A function for adding custom fields depending on the context.
-	AdditionalFields AdditionalFields
+	FieldAdder func(c echo.Context) []zapcore.Field
 }
-
-type SkipRequest func(c echo.Context) bool
-
-type AdditionalFields func(c echo.Context) []zapcore.Field
 
 func Logger(log *zap.Logger) echo.MiddlewareFunc {
 	return LoggerWithConfig(log, defaultLoggerConfig)
@@ -134,8 +130,8 @@ func LoggerWithConfig(log *zap.Logger, config LoggerConfig) echo.MiddlewareFunc 
 				}
 			}
 
-			if config.AdditionalFields != nil {
-				fields = append(fields, config.AdditionalFields(c)...)
+			if config.FieldAdder != nil {
+				fields = append(fields, config.FieldAdder(c)...)
 			}
 
 			s := resp.Status

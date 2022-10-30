@@ -31,11 +31,14 @@ type RecoverConfig struct {
 	// Custom header name for request ID
 	CustomRequestIDHeader string
 
+	// A function for adding custom fields depending on the context.
+	FieldAdder func(c echo.Context, err error) []zap.Field
+
 	// The panic was happened, and it was handled and logged gracefully.
 	// What's next?
 	//
 	// This function is called to handle the error of panic.
-	HandleError func(c echo.Context, err error)
+	ErrorHandler func(c echo.Context, err error)
 }
 
 func Recover(log *zap.Logger) echo.MiddlewareFunc {
@@ -56,6 +59,16 @@ func RecoverWithConfig(log *zap.Logger, config RecoverConfig) echo.MiddlewareFun
 		return func(c echo.Context) error {
 			defer func() {
 				if err := recover(); err != nil {
+					e := func() error {
+						if e, ok := err.(error); ok {
+							return e
+						} else {
+							return fmt.Errorf("panic: %v", err)
+						}
+					}()
+
+					c.Error(e)
+
 					req := c.Request()
 					resp := c.Response()
 
@@ -92,6 +105,10 @@ func RecoverWithConfig(log *zap.Logger, config RecoverConfig) echo.MiddlewareFun
 						fields = append(fields, zap.String("request_id", requestID))
 					}
 
+					if config.FieldAdder != nil {
+						fields = append(fields, config.FieldAdder(c, e)...)
+					}
+
 					msg := func() string {
 						if config.CustomMsg == "" {
 							return DefaultRecoverMsg
@@ -101,18 +118,8 @@ func RecoverWithConfig(log *zap.Logger, config RecoverConfig) echo.MiddlewareFun
 					}()
 					log.Error(msg, fields...)
 
-					e := func() error {
-						if e, ok := err.(error); ok {
-							return e
-						} else {
-							return fmt.Errorf("panic: %v", err)
-						}
-					}()
-
-					c.Error(e)
-
-					if config.HandleError != nil {
-						config.HandleError(c, e)
+					if config.ErrorHandler != nil {
+						config.ErrorHandler(c, e)
 					}
 				}
 			}()

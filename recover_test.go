@@ -213,7 +213,43 @@ func TestRecoverWithCustomRequestIDHeader2(t *testing.T) {
 	assert.Equal(t, requestID, l.ContextMap()["request_id"].(string))
 }
 
-func TestRecoverWithHandleError(t *testing.T) {
+func TestRecoverWithFieldAdder(t *testing.T) {
+	config := RecoverConfig{
+		FieldAdder: func(c echo.Context, err error) []zap.Field {
+			return []zapcore.Field{
+				zap.String("hello", "world!"),
+				zap.Bool("b", true),
+			}
+		},
+	}
+
+	log, logs := createTestZapLogger()
+	m := RecoverWithConfig(log, config)
+	e := createTestEcho(m)
+
+	const oops = "Oops, I did it again, I played with your heart"
+
+	e.GET("/panic", func(c echo.Context) error {
+		if true {
+			panic(oops)
+		}
+		return nil
+	})
+
+	r := httptest.NewRequest("GET", "/panic", nil)
+	w := httptest.NewRecorder()
+	e.ServeHTTP(w, r)
+
+	res := w.Result()
+	assert.Equal(t, http.StatusInternalServerError, res.StatusCode)
+
+	l := logs.All()[0]
+	assert.Equal(t, oops, l.ContextMap()["error"].(string))
+	assert.Equal(t, "world!", l.ContextMap()["hello"].(string))
+	assert.Equal(t, true, l.ContextMap()["b"].(bool))
+}
+
+func TestRecoverWithErrorHandler(t *testing.T) {
 	var wg sync.WaitGroup
 	wg.Add(1)
 
@@ -226,7 +262,7 @@ func TestRecoverWithHandleError(t *testing.T) {
 	}
 
 	config := RecoverConfig{
-		HandleError: handleError,
+		ErrorHandler: handleError,
 	}
 
 	log, logs := createTestZapLogger()
