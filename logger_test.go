@@ -290,12 +290,6 @@ func TestLoggerWithCustomRequestIDHeader(t *testing.T) {
 	m := LoggerWithConfig(log, config)
 	e := createTestEcho(m)
 
-	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			return next(c)
-		}
-	})
-
 	e.GET("/hello", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello!")
 	})
