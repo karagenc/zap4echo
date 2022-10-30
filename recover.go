@@ -24,7 +24,7 @@ type RecoverConfig struct {
 	PrintStackTraceOfAllGoroutines bool
 
 	// Custom header name for request ID
-	CustomRequestID string
+	CustomRequestIDHeader string
 
 	// The panic was happened, and it was handled and logged gracefully.
 	// What's next?
@@ -73,8 +73,8 @@ func RecoverWithConfig(log *zap.Logger, config RecoverConfig) echo.MiddlewareFun
 					}
 
 					requestIDHeader := func() string {
-						if config.CustomRequestID != "" {
-							return config.CustomRequestID
+						if config.CustomRequestIDHeader != "" {
+							return config.CustomRequestIDHeader
 						} else {
 							return DefaultRequestIDHeader
 						}

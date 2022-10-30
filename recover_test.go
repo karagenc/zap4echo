@@ -110,6 +110,75 @@ func TestRecoverWithStackTraceSize(t *testing.T) {
 	assert.Equal(t, 10, len(stacktrace))
 }
 
+func TestRecoverWithCustomRequestIDHeader(t *testing.T) {
+	const requestID = "31337"
+	const requestIDHeader = "My1337RequestID"
+	config := RecoverConfig{
+		CustomRequestIDHeader: requestIDHeader,
+	}
+
+	log, logs := createTestZapLogger()
+	m := RecoverWithConfig(log, config)
+	e := createTestEcho(m)
+
+	const oops = "Oops, I did it again, I played with your heart"
+
+	e.GET("/panic", func(c echo.Context) error {
+		if true {
+			panic(oops)
+		}
+		return nil
+	})
+
+	r := httptest.NewRequest("GET", "/panic", nil)
+	r.Header.Set(requestIDHeader, requestID)
+
+	w := httptest.NewRecorder()
+	e.ServeHTTP(w, r)
+
+	res := w.Result()
+	assert.Equal(t, http.StatusInternalServerError, res.StatusCode)
+
+	l := logs.All()[0]
+
+	assert.Equal(t, oops, l.ContextMap()["error"].(string))
+	assert.Equal(t, requestID, l.ContextMap()["request_id"].(string))
+}
+
+func TestRecoverWithCustomRequestIDHeader2(t *testing.T) {
+	const requestID = "31337"
+	const requestIDHeader = "My1337RequestID"
+	config := RecoverConfig{
+		CustomRequestIDHeader: requestIDHeader,
+	}
+
+	log, logs := createTestZapLogger()
+	m := RecoverWithConfig(log, config)
+	e := createTestEcho(m)
+
+	const oops = "Oops, I did it again, I played with your heart"
+
+	e.GET("/panic", func(c echo.Context) error {
+		c.Response().Header().Set(requestIDHeader, requestID)
+		if true {
+			panic(oops)
+		}
+		return nil
+	})
+
+	r := httptest.NewRequest("GET", "/panic", nil)
+	w := httptest.NewRecorder()
+	e.ServeHTTP(w, r)
+
+	res := w.Result()
+	assert.Equal(t, http.StatusInternalServerError, res.StatusCode)
+
+	l := logs.All()[0]
+
+	assert.Equal(t, oops, l.ContextMap()["error"].(string))
+	assert.Equal(t, requestID, l.ContextMap()["request_id"].(string))
+}
+
 func TestRecoverWithHandleError(t *testing.T) {
 	var wg sync.WaitGroup
 	wg.Add(1)

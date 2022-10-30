@@ -39,7 +39,7 @@ type LoggerConfig struct {
 	OmitReferer    bool
 
 	// Custom header name for request ID
-	CustomRequestID string
+	CustomRequestIDHeader string
 
 	// A function for adding custom fields depending on the context.
 	AdditionalFields AdditionalFields
@@ -109,8 +109,8 @@ func LoggerWithConfig(log *zap.Logger, config LoggerConfig) echo.MiddlewareFunc 
 
 			if !config.OmitRequestID {
 				requestIDHeader := func() string {
-					if config.CustomRequestID != "" {
-						return config.CustomRequestID
+					if config.CustomRequestIDHeader != "" {
+						return config.CustomRequestIDHeader
 					} else {
 						return DefaultRequestIDHeader
 					}

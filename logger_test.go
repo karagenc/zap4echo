@@ -253,6 +253,69 @@ func TestLoggerWithEverythingOmitted(t *testing.T) {
 	assert.Nil(t, l.ContextMap()["referer"])
 }
 
+func TestLoggerWithCustomRequestIDHeader(t *testing.T) {
+	const requestID = "31337"
+	const requestIDHeader = "My1337RequestID"
+	config := LoggerConfig{
+		CustomRequestIDHeader: requestIDHeader,
+	}
+
+	log, logs := createTestZapLogger()
+	m := LoggerWithConfig(log, config)
+	e := createTestEcho(m)
+
+	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			return next(c)
+		}
+	})
+
+	e.GET("/hello", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Hello!")
+	})
+
+	r := httptest.NewRequest("GET", "/hello", nil)
+	r.Header.Set(requestIDHeader, requestID)
+
+	w := httptest.NewRecorder()
+	e.ServeHTTP(w, r)
+
+	res := w.Result()
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+
+	l := logs.All()[0]
+	assert.Equal(t, requestID, l.ContextMap()["request_id"].(string))
+}
+
+// This is almost the same as `TestLoggerWithCustomRequestIDHeader`,
+// but the difference is that request ID is set by server instead of client.
+func TestLoggerWithCustomRequestIDHeader2(t *testing.T) {
+	const requestID = "31337"
+	const requestIDHeader = "My1337RequestID"
+	config := LoggerConfig{
+		CustomRequestIDHeader: requestIDHeader,
+	}
+
+	log, logs := createTestZapLogger()
+	m := LoggerWithConfig(log, config)
+	e := createTestEcho(m)
+
+	e.GET("/hello", func(c echo.Context) error {
+		c.Response().Header().Set(requestIDHeader, requestID)
+		return c.String(http.StatusOK, "Hello!")
+	})
+
+	r := httptest.NewRequest("GET", "/hello", nil)
+	w := httptest.NewRecorder()
+	e.ServeHTTP(w, r)
+
+	res := w.Result()
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+
+	l := logs.All()[0]
+	assert.Equal(t, requestID, l.ContextMap()["request_id"].(string))
+}
+
 func TestDefaultLoggerWithAdditionalFields(t *testing.T) {
 	config := LoggerConfig{
 		IncludeCaller: true,
