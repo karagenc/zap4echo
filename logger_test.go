@@ -64,6 +64,68 @@ func TestDefaultLogger(t *testing.T) {
 	assert.Equal(t, false, l.Caller.Defined)
 }
 
+func TestDefaultLoggerWithDifferentLevels(t *testing.T) {
+	log, logs := createTestZapLogger()
+	m := Logger(log)
+	e := createTestEcho(m)
+
+	e.GET("/serviceunavailable", func(c echo.Context) error {
+		return c.NoContent(http.StatusServiceUnavailable)
+	})
+
+	e.GET("/teapot", func(c echo.Context) error {
+		return c.NoContent(http.StatusTeapot)
+	})
+
+	e.GET("/seeother", func(c echo.Context) error {
+		return c.NoContent(http.StatusSeeOther)
+	})
+
+	e.GET("/earlyhints", func(c echo.Context) error {
+		return c.NoContent(http.StatusEarlyHints)
+	})
+
+	r := httptest.NewRequest("GET", "/serviceunavailable", nil)
+	w := httptest.NewRecorder()
+	e.ServeHTTP(w, r)
+
+	res := w.Result()
+	assert.Equal(t, http.StatusServiceUnavailable, res.StatusCode)
+
+	l := logs.All()[0]
+	assert.Equal(t, zapcore.ErrorLevel, l.Level)
+
+	r = httptest.NewRequest("GET", "/teapot", nil)
+	w = httptest.NewRecorder()
+	e.ServeHTTP(w, r)
+
+	res = w.Result()
+	assert.Equal(t, http.StatusTeapot, res.StatusCode)
+
+	l = logs.All()[1]
+	assert.Equal(t, zapcore.WarnLevel, l.Level)
+
+	r = httptest.NewRequest("GET", "/seeother", nil)
+	w = httptest.NewRecorder()
+	e.ServeHTTP(w, r)
+
+	res = w.Result()
+	assert.Equal(t, http.StatusSeeOther, res.StatusCode)
+
+	l = logs.All()[2]
+	assert.Equal(t, zapcore.InfoLevel, l.Level)
+
+	r = httptest.NewRequest("GET", "/earlyhints", nil)
+	w = httptest.NewRecorder()
+	e.ServeHTTP(w, r)
+
+	res = w.Result()
+	assert.Equal(t, http.StatusEarlyHints, res.StatusCode)
+
+	l = logs.All()[3]
+	assert.Equal(t, zapcore.InfoLevel, l.Level)
+}
+
 func TestDefaultLoggerWithErrorOnly(t *testing.T) {
 	config := LoggerConfig{
 		ErrorOnly: true,

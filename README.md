@@ -20,7 +20,7 @@ This is a very customizable middleware that provides logging and panic recovery 
     - zap4echo is designed to be performant.
     - Echo and zap is one of the most performant framework/logger combination in the Go ecosystem.
 - Well tested
-    - %97.9 test coverage at the time of writing.
+    - 100% test coverage
 
 ## Fields Logged
 
