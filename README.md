@@ -1,6 +1,6 @@
 # Zap Middleware for Echo
 
-This is a very customizable middleware that provides logging and panic recovery for [Echo](https://github.com/labstack/echo) using Uber's [zap](https://github.com/uber-go/zap). Please see [LoggerConfig](https://pkg.go.dev/github.com/tomruk/zap4echo#LoggerConfig) and [RecoverWithConfig](https://pkg.go.dev/github.com/tomruk/zap4echo#RecoverWithConfig) for documentation of configuration fields. Have fun!
+This is a very customizable middleware that provides logging and panic recovery for [Echo](https://github.com/labstack/echo) using Uber's [zap](https://github.com/uber-go/zap). Please see [LoggerConfig](https://pkg.go.dev/github.com/tomruk/zap4echo#LoggerConfig) and [RecoverConfig](https://pkg.go.dev/github.com/tomruk/zap4echo#RecoverConfig) for documentation of configuration fields. Have fun!
 
 ## Features
 
@@ -71,7 +71,7 @@ curl http://host:port
 
 ### Customization
 
-Configuration for customization are documented with comments. For documentation, have a look at [LoggerConfig](https://pkg.go.dev/github.com/tomruk/zap4echo#LoggerConfig) and [RecoverWithConfig](https://pkg.go.dev/github.com/tomruk/zap4echo#RecoverWithConfig)
+Configuration for customization are documented with comments. For documentation, have a look at [LoggerConfig](https://pkg.go.dev/github.com/tomruk/zap4echo#LoggerConfig) and [RecoverConfig](https://pkg.go.dev/github.com/tomruk/zap4echo#RecoverConfig)
 
 ```go
 log, _ := zap.NewDevelopment()
