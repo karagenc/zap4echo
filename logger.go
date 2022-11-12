@@ -30,6 +30,9 @@ type LoggerConfig struct {
 	// Caller gets printed as `zap4echo/logger.go:121`. That is redundant.
 	IncludeCaller bool
 
+	// If true, printing of stack trace will be disabled.
+	OmitStackTrace bool
+
 	// If true, particular field will not be printed.
 	OmitStatusText bool
 	OmitClientIP   bool
@@ -52,6 +55,10 @@ func Logger(log *zap.Logger) echo.MiddlewareFunc {
 func LoggerWithConfig(log *zap.Logger, config LoggerConfig) echo.MiddlewareFunc {
 	if !config.IncludeCaller {
 		log = log.WithOptions(zap.WithCaller(false))
+	}
+
+	if config.OmitStackTrace {
+		log = log.WithOptions(zap.AddStacktrace(zap.FatalLevel + 1))
 	}
 
 	return func(next echo.HandlerFunc) echo.HandlerFunc {

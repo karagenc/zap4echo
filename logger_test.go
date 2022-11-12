@@ -287,6 +287,7 @@ func TestDefaultLoggerWithIncludeCaller(t *testing.T) {
 
 func TestLoggerWithEverythingOmitted(t *testing.T) {
 	config := LoggerConfig{
+		OmitStackTrace: true,
 		OmitStatusText: true,
 		OmitClientIP:   true,
 		OmitUserAgent:  true,
@@ -307,7 +308,7 @@ func TestLoggerWithEverythingOmitted(t *testing.T) {
 	})
 
 	e.GET("/hello", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello!")
+		return c.String(http.StatusInternalServerError, "Hello!")
 	})
 
 	r := httptest.NewRequest("GET", "/hello", nil)
@@ -319,20 +320,21 @@ func TestLoggerWithEverythingOmitted(t *testing.T) {
 	e.ServeHTTP(w, r)
 
 	res := w.Result()
-	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.Equal(t, http.StatusInternalServerError, res.StatusCode)
 
 	l := logs.All()[0]
-	assert.Equal(t, zapcore.InfoLevel, l.Level)
+	assert.Equal(t, zapcore.ErrorLevel, l.Level)
 	assert.Equal(t, DefaultLoggerMsg, l.Message)
 	assert.Equal(t, "HTTP/1.1", l.ContextMap()["proto"].(string))
 	assert.Equal(t, "192.168.10.60:5252", l.ContextMap()["host"].(string))
 	assert.Equal(t, "GET", l.ContextMap()["method"].(string))
-	assert.Equal(t, int64(http.StatusOK), l.ContextMap()["status"].(int64))
+	assert.Equal(t, int64(http.StatusInternalServerError), l.ContextMap()["status"].(int64))
 	assert.Equal(t, int64(6), l.ContextMap()["response_size"].(int64))
 
 	_, ok := l.ContextMap()["latency"].(time.Duration)
 	assert.Equal(t, true, ok)
 
+	assert.Equal(t, "", l.Stack, "stack trace should not be printed")
 	assert.Nil(t, l.ContextMap()["status_text"])
 	assert.Nil(t, l.ContextMap()["client_ip"])
 	assert.Nil(t, l.ContextMap()["user_agent"])
@@ -437,6 +439,6 @@ func createTestEcho(middleware echo.MiddlewareFunc) *echo.Echo {
 
 func createTestZapLogger() (log *zap.Logger, logs *observer.ObservedLogs) {
 	observed, logs := observer.New(zap.InfoLevel)
-	log = zap.New(observed, zap.AddCaller())
+	log = zap.New(observed, zap.AddCaller(), zap.AddStacktrace(zap.ErrorLevel))
 	return log, logs
 }
