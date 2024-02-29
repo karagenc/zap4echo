@@ -6,10 +6,9 @@ This is a very customizable middleware that provides logging and panic recovery 
 
 - Highly customizable
     - There's a `Skipper` function so you can skip logging of HTTP requests depending on the `echo.Context`
-    - Optionally, only `error`'ed requests can be logged and successful requests can be omitted.
-        - By `error`'ed, it is meant that handlers that returned non-nil `error` or responses that has a status code of 3XX, 4XX, or 5XX
+    - Error only logging: Logging can be limited to requests resulted in error — requests which either returned an error or has a status code of 3xx, 4xx, or 5xx.
     - Custom `msg` field
-    - `caller` field is not logged by default — because it is redundant — but it can be enabled with `IncludeCaller`
+    - `caller` field is not logged by default. Logging can be enabled with `IncludeCaller`.
     - You can omit certain log fields for convenience or performance reasons.
     - Request IDs are logged. Custom header name can be set with `CustomRequestIDHeader`
     - Custom log fields can be added depending on the `echo.Context` using `FieldAdder` function.

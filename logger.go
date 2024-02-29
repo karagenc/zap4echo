@@ -15,8 +15,8 @@ const DefaultRequestIDHeader = echo.HeaderXRequestID
 var defaultLoggerConfig = LoggerConfig{}
 
 type LoggerConfig struct {
-	// Only log requests that responds with a status code of 3XX, 4XX, or 5XX;
-	// or log when the handler returns an error.
+	// Only log requests that respond with a status code of
+	// 3XX, 4XX, or 5XX, or when the handler returns an error.
 	ErrorOnly bool
 
 	// Skip the current request depending on the context.
