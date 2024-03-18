@@ -1,5 +1,11 @@
 # Zap Middleware for Echo
 
+<div align="left">
+    <a href="https://github.com/tomruk/zap4echo/actions/workflows/tests.yml"><img src="https://github.com/tomruk/zap4echo/actions/workflows/tests.yml/badge.svg"></img></a>
+    <a href="https://coveralls.io/github/tomruk/zap4echo"><img src="https://coveralls.io/repos/github/tomruk/zap4echo/badge.svg"></img></a>
+    <a href="https://pkg.go.dev/github.com/tomruk/zap4echo"><img src="https://pkg.go.dev/badge/github.com/tomruk/zap4echo"></img></a>
+</div><br>
+
 This is a very customizable middleware that provides logging and panic recovery for [Echo](https://github.com/labstack/echo) using Uber's [zap](https://github.com/uber-go/zap). Please see [LoggerConfig](https://pkg.go.dev/github.com/tomruk/zap4echo#LoggerConfig) and [RecoverConfig](https://pkg.go.dev/github.com/tomruk/zap4echo#RecoverConfig) for documentation of configuration fields. Have fun!
 
 ## Features
