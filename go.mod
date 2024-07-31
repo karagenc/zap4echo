@@ -1,4 +1,4 @@
-module github.com/tomruk/zap4echo
+module github.com/karagenc/zap4echo
 
 go 1.17
 

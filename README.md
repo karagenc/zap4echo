@@ -1,12 +1,12 @@
 # Zap Middleware for Echo
 
 <div align="left">
-    <a href="https://github.com/tomruk/zap4echo/actions/workflows/tests.yml"><img src="https://github.com/tomruk/zap4echo/actions/workflows/tests.yml/badge.svg"></img></a>
-    <a href="https://coveralls.io/github/tomruk/zap4echo"><img src="https://coveralls.io/repos/github/tomruk/zap4echo/badge.svg"></img></a>
-    <a href="https://pkg.go.dev/github.com/tomruk/zap4echo"><img src="https://pkg.go.dev/badge/github.com/tomruk/zap4echo"></img></a>
+    <a href="https://github.com/karagenc/zap4echo/actions/workflows/tests.yml"><img src="https://github.com/karagenc/zap4echo/actions/workflows/tests.yml/badge.svg"></img></a>
+    <a href="https://coveralls.io/github/karagenc/zap4echo"><img src="https://coveralls.io/repos/github/karagenc/zap4echo/badge.svg"></img></a>
+    <a href="https://pkg.go.dev/github.com/karagenc/zap4echo"><img src="https://pkg.go.dev/badge/github.com/karagenc/zap4echo"></img></a>
 </div><br>
 
-This is a very customizable middleware that provides logging and panic recovery for [Echo](https://github.com/labstack/echo) using Uber's [zap](https://github.com/uber-go/zap). Please see [LoggerConfig](https://pkg.go.dev/github.com/tomruk/zap4echo#LoggerConfig) and [RecoverConfig](https://pkg.go.dev/github.com/tomruk/zap4echo#RecoverConfig) for documentation of configuration fields. Have fun!
+This is a very customizable middleware that provides logging and panic recovery for [Echo](https://github.com/labstack/echo) using Uber's [zap](https://github.com/uber-go/zap). Please see [LoggerConfig](https://pkg.go.dev/github.com/karagenc/zap4echo#LoggerConfig) and [RecoverConfig](https://pkg.go.dev/github.com/karagenc/zap4echo#RecoverConfig) for documentation of configuration fields. Have fun!
 
 ## Features
 
@@ -57,7 +57,7 @@ Please note that in addition, extra fields can be added with `FieldAdder` functi
 This is a quick cheat sheet. For complete examples, have a look at: [basic](_examples/basic/main.go) and [full](_examples/full/main.go)
 
 ```shell
-go get -u github.com/tomruk/zap4echo
+go get -u github.com/karagenc/zap4echo
 ```
 
 ```go
@@ -76,7 +76,7 @@ curl http://host:port
 
 ### Customization
 
-Configuration for customization are documented with comments. For documentation, have a look at [LoggerConfig](https://pkg.go.dev/github.com/tomruk/zap4echo#LoggerConfig) and [RecoverConfig](https://pkg.go.dev/github.com/tomruk/zap4echo#RecoverConfig)
+Configuration for customization are documented with comments. For documentation, have a look at [LoggerConfig](https://pkg.go.dev/github.com/karagenc/zap4echo#LoggerConfig) and [RecoverConfig](https://pkg.go.dev/github.com/karagenc/zap4echo#RecoverConfig)
 
 ```go
 log, _ := zap.NewDevelopment()

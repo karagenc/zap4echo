@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/labstack/echo/v4"
-	"github.com/tomruk/zap4echo"
+	"github.com/karagenc/zap4echo"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
